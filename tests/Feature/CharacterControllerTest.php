@@ -29,7 +29,7 @@ class CharacterControllerTest extends TestCase
 
         $this->app->instance(CharacterRepository::class, $this->repositoryMock);
 
-        $response = $this->getJson('/characters?page=1');
+        $response = $this->getJson('/api/characters?page=1');
 
         $response->assertStatus(Response::HTTP_OK)->assertJson($data);
     }
@@ -47,7 +47,7 @@ class CharacterControllerTest extends TestCase
 
         $this->app->instance(CharacterRepository::class, $this->repositoryMock);
 
-        $response = $this->getJson('/characters/1');
+        $response = $this->getJson('/api/characters/1');
 
         $response->assertStatus(Response::HTTP_OK)->assertJson($data);
     }
@@ -65,7 +65,7 @@ class CharacterControllerTest extends TestCase
 
         $this->app->instance(CharacterRepository::class, $this->repositoryMock);
 
-        $response = $this->getJson('/characters/1');
+        $response = $this->getJson('/api/characters/1');
 
         $response->assertStatus(Response::HTTP_OK)->assertJson($data);
     }
