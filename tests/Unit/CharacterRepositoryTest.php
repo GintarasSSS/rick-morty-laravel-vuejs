@@ -3,6 +3,7 @@
 namespace Tests\Unit;
 
 use App\Repositories\CharacterRepository;
+use Carbon\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use Mockery;
@@ -19,7 +20,7 @@ class CharacterRepositoryTest extends TestCase
         $this->characterMock = Mockery::mock(Character::class);
         $this->episodeMock = Mockery::mock(Episode::class);
 
-        Cache::flush();
+        Carbon::setTestNow(Carbon::create(2000));
     }
 
     public function testGetAllReturnsCharacters(): void
@@ -27,9 +28,9 @@ class CharacterRepositoryTest extends TestCase
         $this->characterMock->shouldReceive('page')->with(1)->andReturnSelf();
         $this->characterMock->shouldReceive('get')->andReturn(['character1', 'character2']);
 
-        Cache::shouldReceive('rememberForever')
+        Cache::shouldReceive('remember')
             ->once()
-            ->with(Mockery::any(), Mockery::type('Closure'))
+            ->with(Mockery::any(), Mockery::any(), Mockery::type('Closure'))
             ->andReturn(['character1', 'character2']);
 
         $repository = new CharacterRepository($this->characterMock, $this->episodeMock);
@@ -44,9 +45,9 @@ class CharacterRepositoryTest extends TestCase
         $this->characterMock->shouldReceive('page')->with(null)->andReturnSelf();
         $this->characterMock->shouldReceive('get')->andReturn(['character1', 'character2']);
 
-        Cache::shouldReceive('rememberForever')
+        Cache::shouldReceive('remember')
             ->once()
-            ->with(Mockery::any(), Mockery::type('Closure'))
+            ->with(Mockery::any(), Mockery::any(), Mockery::type('Closure'))
             ->andReturn(['character1', 'character2']);
 
         $repository = new CharacterRepository($this->characterMock, $this->episodeMock);
@@ -88,9 +89,9 @@ class CharacterRepositoryTest extends TestCase
 
         $this->episodeMock->shouldReceive('get')->with(1, 2)->andReturn($episodes);
 
-        Cache::shouldReceive('rememberForever')
+        Cache::shouldReceive('remember')
             ->once()
-            ->with(Mockery::any(), Mockery::type('Closure'))
+            ->with(Mockery::any(), Mockery::any(), Mockery::type('Closure'))
             ->andReturn((object) [
                 'id' => 1,
                 'name' => 'John Doe',
@@ -119,9 +120,9 @@ class CharacterRepositoryTest extends TestCase
 
         $this->episodeMock->shouldReceive('get')->with(3)->andReturn($episode);
 
-        Cache::shouldReceive('rememberForever')
+        Cache::shouldReceive('remember')
             ->once()
-            ->with(Mockery::any(), Mockery::type('Closure'))
+            ->with(Mockery::any(), Mockery::any(), Mockery::type('Closure'))
             ->andReturn((object) [
                 'id' => 2,
                 'name' => 'Jane Doe',
@@ -158,9 +159,9 @@ class CharacterRepositoryTest extends TestCase
             'episode' => []
         ]);
 
-        Cache::shouldReceive('rememberForever')
+        Cache::shouldReceive('remember')
             ->once()
-            ->with(Mockery::any(), Mockery::type('Closure'))
+            ->with(Mockery::any(), Mockery::any(), Mockery::type('Closure'))
             ->andReturn((object) [
                 'id' => 1,
                 'name' => 'John Doe',
@@ -187,9 +188,9 @@ class CharacterRepositoryTest extends TestCase
 
         $this->episodeMock->shouldNotReceive('get');
 
-        Cache::shouldReceive('rememberForever')
+        Cache::shouldReceive('remember')
             ->once()
-            ->with(Mockery::any(), Mockery::type('Closure'))
+            ->with(Mockery::any(), Mockery::any(), Mockery::type('Closure'))
             ->andReturn((object) [
                 'id' => 1,
                 'name' => 'John Doe',

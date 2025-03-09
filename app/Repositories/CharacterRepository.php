@@ -3,6 +3,7 @@
 namespace App\Repositories;
 
 use App\Interfaces\CharacterRepositoryInterface;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use NickBeen\RickAndMortyPhpApi\Character;
@@ -20,7 +21,7 @@ class CharacterRepository implements CharacterRepositoryInterface
         $key = __CLASS__ . '::' . __FUNCTION__ . '::page::' . $page;
 
         try {
-            $characters = Cache::rememberForever($key, fn () => $this->character->page($page)->get());
+            $characters = Cache::remember($key, Carbon::now()->addDay(), fn () => $this->character->page($page)->get());
 
             return [
                 'status' => 'success',
@@ -41,7 +42,7 @@ class CharacterRepository implements CharacterRepositoryInterface
         $key = __CLASS__ . '::' . __FUNCTION__ . '::id::' . $id;
 
         try {
-            $character = Cache::rememberForever($key, function () use ($id) {
+            $character = Cache::remember($key, Carbon::now()->addDay(), function () use ($id) {
                 $character = $this->character->get($id);
                 $character->episodes_extended = $this->getEpisodes($character->episode ?? []);
 
