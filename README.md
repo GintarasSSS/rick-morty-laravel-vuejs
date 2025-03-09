@@ -34,4 +34,4 @@ docker-compose exec -it app bash
 ```
 XDEBUG_MODE=coverage php artisan test --coverage
 ```
-![img.png](img.png)
+![img_1.png](img_1.png)

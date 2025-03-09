@@ -1,5 +1,5 @@
 export default {
-    setCharacter (state, characters) {
+    setCharacters (state, characters) {
         state.characters = characters.results;
     },
     setRows (state, rows) {
@@ -7,5 +7,8 @@ export default {
     },
     setPages (state, pages) {
         state.pages = pages;
+    },
+    setCharacter (state, character) {
+        state.character = character;
     }
 };

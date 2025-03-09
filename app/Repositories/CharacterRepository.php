@@ -6,10 +6,11 @@ use App\Interfaces\CharacterRepositoryInterface;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use NickBeen\RickAndMortyPhpApi\Character;
+use NickBeen\RickAndMortyPhpApi\Episode;
 
 class CharacterRepository implements CharacterRepositoryInterface
 {
-    public function __construct(private Character $character)
+    public function __construct(private Character $character, private Episode $episode)
     {
     }
 
@@ -18,7 +19,7 @@ class CharacterRepository implements CharacterRepositoryInterface
         $key = __CLASS__ . '::' . __FUNCTION__ . '::page::' . $page;
 
         try {
-            $characters = Cache::get($key, fn () => $this->character->page($page)->get());
+            $characters = Cache::rememberForever($key, fn () => $this->character->page($page)->get());
 
             return [
                 'status' => 'success',
@@ -39,7 +40,12 @@ class CharacterRepository implements CharacterRepositoryInterface
         $key = __CLASS__ . '::' . __FUNCTION__ . '::id::' . $id;
 
         try {
-            $character = Cache::get($key, fn () => $this->character->get($id));
+            $character = Cache::rememberForever($key, function () use ($id) {
+                $character = $this->character->get($id);
+                $character->episodes_extended = $this->getEpisodes($character->episode ?? []);
+
+                return $character;
+            });
 
             return [
                 'status' => 'success',
@@ -53,5 +59,25 @@ class CharacterRepository implements CharacterRepositoryInterface
                 'character' => []
             ];
         }
+    }
+
+    private function getEpisodes(array $episodes): array
+    {
+        $results = [];
+
+        foreach ($episodes as $episode) {
+            $position = strrpos((string) $episode, '/');
+            $id = substr($episode, $position + 1);
+
+            if (is_numeric($id)) {
+                $results[] = intval($id);
+            };
+        }
+
+        if ($results) {
+            return $this->episode->get(...$results);
+        }
+
+        return $results;
     }
 }

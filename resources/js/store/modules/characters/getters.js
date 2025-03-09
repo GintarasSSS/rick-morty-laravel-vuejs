@@ -7,5 +7,8 @@ export default {
     },
     rowsCount(state) {
         return state.rows;
+    },
+    getCharacter (state) {
+        return state.character;
     }
 };
