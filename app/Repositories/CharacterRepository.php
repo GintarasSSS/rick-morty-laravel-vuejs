@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\Log;
 use NickBeen\RickAndMortyPhpApi\Character;
 use NickBeen\RickAndMortyPhpApi\Episode;
+use NickBeen\RickAndMortyPhpApi\Dto\Episode as CharacterEpisode;
 
 class CharacterRepository implements CharacterRepositoryInterface
 {
@@ -61,7 +62,7 @@ class CharacterRepository implements CharacterRepositoryInterface
         }
     }
 
-    private function getEpisodes(array $episodes): array
+    private function getEpisodes(array $episodes): array|CharacterEpisode
     {
         $results = [];
 
@@ -75,7 +76,13 @@ class CharacterRepository implements CharacterRepositoryInterface
         }
 
         if ($results) {
-            return $this->episode->get(...$results);
+            $results = $this->episode->get(...$results);
+
+            if (is_array($results)) {
+                return $results;
+            } elseif (is_object($results)) {
+                return [$results];
+            }
         }
 
         return $results;

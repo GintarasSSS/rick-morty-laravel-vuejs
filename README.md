@@ -27,6 +27,12 @@ docker-compose exec app php artisan key:generate
 ```
 docker-compose exec app php artisan migrate
 ```
+```
+docker-compose exec app npm install
+```
+```
+docker-compose exec app npm run build
+```
 ## Testing
 ```
 docker-compose exec -it app bash
@@ -34,4 +40,9 @@ docker-compose exec -it app bash
 ```
 XDEBUG_MODE=coverage php artisan test --coverage
 ```
-![img_1.png](img_1.png)
+![img_4.png](img_4.png)
+## UI
+ - http://127.0.0.1/characters
+![img.png](img.png)
+![img_2.png](img_2.png)
+![img_3.png](img_3.png)
