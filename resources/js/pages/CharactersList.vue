@@ -2,17 +2,34 @@
     <div>
         <TheSpinner v-if="loading"/>
         <div v-else>
-            <BPagination
-                v-if="rows"
-                v-model="currentPage"
-                :total-rows="rows"
-                :per-page="perPage"
-                first-number
-                last-number
-                align="center"
-                class="mt-3"
-                @update:model-value="handlePageChange"
-            />
+            <div v-if="characters.length">
+                <div class="row">
+                    <div
+                        v-for="character in characters"
+                        :key="character.id"
+                        class="col-md-6 col-12 g-3"
+                    >
+                        <ListCard
+                            :character="character"
+                        />
+                    </div>
+                </div>
+
+                <BPagination
+                    v-if="rows"
+                    v-model="currentPage"
+                    :total-rows="rows"
+                    :per-page="perPage"
+                    first-number
+                    last-number
+                    align="center"
+                    class="mt-3"
+                    @update:model-value="handlePageChange"
+                />
+            </div>
+            <div v-else>
+                <h2>No Characters found.</h2>
+            </div>
         </div>
     </div>
 </template>
@@ -23,11 +40,13 @@
     import { useRoute, useRouter } from "vue-router";
 
     import TheSpinner from "../components/layout/TheSpinner.vue";
+    import ListCard from "../components/layout/ListCard.vue";
 
     export default {
         name: "CharactersList",
         components: {
-            TheSpinner
+            TheSpinner,
+            ListCard
         },
         setup() {
             const store = useStore();
@@ -40,6 +59,7 @@
 
             const showPagination = computed(() => store.getters['characters/pagesCount'] > 1);
             const rows = computed(() => store.getters['characters/rowsCount']);
+            const characters = computed(() => store.getters['characters/charactersList']);
 
             const loadCharacters = () => {
                 loading.value = true;
@@ -69,8 +89,8 @@
             });
 
             onMounted(() => {
+                handlePageChange(route.query.page || 1);
                 loadCharacters();
-                handlePageChange(1);
             });
 
             return {
@@ -79,6 +99,7 @@
                 rows,
                 showPagination,
                 loading,
+                characters,
                 handlePageChange
             }
         }
